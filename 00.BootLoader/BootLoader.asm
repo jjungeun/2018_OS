@@ -61,33 +61,19 @@ START:
 	call PRINTMESSAGE
 	add sp,6
 
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; 디스크에서 OS이미지 로딩
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	; 디스크 읽기전 먼저 리셋
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-RESETDISK:
-	;BIOS Reset Function 호출
-	mov ax, 0
-	mov dl, 0
-	int 0x13
-	jc HANDLEDISKERROR
-
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; 현재 시간 출력	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	push TIMEMESSAGE
-	push 1
 	push 0
+	push -1
 	call PRINTMESSAGE
-	add sp,6
+	add sp,5
 
 	mov bx, TIMEBUF	;bx레지스터에 TIMEBUF주소값 넣기
-	mov ah, 0x02	;기능 번호는 02h
-	int 0x1a	;인터럽트 번호는 1ah
+	mov ah, 0x01	;기능 번호는 02h
+	int 0x19	;인터럽트 번호는 1ah
 	jc GETTIMEERROR	;에러 발생하면 이동
 	
 	;hour
@@ -104,10 +90,25 @@ RESETDISK:
 	
 	
 	push TIMEBUF
-	push 1
-	push 15
+	push 0
+	push 14
 	call PRINTMESSAGE
 	add sp, 6
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; 디스크에서 OS이미지 로딩
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	; 디스크 읽기전 먼저 리셋
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+RESETDISK:
+	;BIOS Reset Function 호출
+	mov ax, 0
+	mov dl, 0
+	int 0x13
+	jc HANDLEDISKERROR
+
 
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	; 디스크에서 섹터를 읽음
